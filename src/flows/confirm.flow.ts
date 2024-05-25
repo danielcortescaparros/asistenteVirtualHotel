@@ -3,43 +3,56 @@ import { clearHistory } from "../utils/handleHistory";
 import { addMinutes, format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { appToCalendar } from "src/services/calendar";
+import { PrismaClient } from "@prisma/client";
+
+//db
+const prisma = new PrismaClient;
 
 const DURATION_MEET = process.env.DURATION_MEET ?? 45
 const TIME_ZONE = process.env.TZ
-/**
- * Encargado de pedir los datos necesarios para registrar el evento en el calendario
- */
-const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic }) => {
-    await flowDynamic('Ok, voy a pedirte unos datos para agendar')
-    await flowDynamic('¿Cual es tu nombre?')
-}).addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
+
+// Flow
+const flowConfirm = addKeyword('test').addAction(async (_, { flowDynamic }) => {
+    await flowDynamic('Perfecto, ya casi está, para enviar la solicitud responda a lo siguiente por favor.')
+    await flowDynamic('¿Cuál es su número de habitación?')
+}).addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow, fallBack }) => {
 
     if (ctx.body.toLocaleLowerCase().includes('cancelar')) {
         clearHistory(state)
-        return endFlow(`¿Como puedo ayudarte?`)
-
+        return endFlow(`Petición cancelada. ¿Cómo puedo ayudarle?`)
+    } else if (!/^\d+$/.test(ctx.body)) {
+        return fallBack(`El formato parece ser incorrecto. Por favor, escriba el número de habitación únicamente con números.`)
     }
-    await state.update({ name: ctx.body })
-    await flowDynamic(`Ultima pregunta ¿Cual es tu email?`)
+    await state.update({ hab: ctx.body })
+    await flowDynamic(`Por último, ¿Cómo se llama?`)
 })
-    .addAction({ capture: true }, async (ctx, { state, flowDynamic, fallBack }) => {
+    .addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow }) => {
 
-        if (!ctx.body.includes('@')) {
+        await state.update({ name: ctx.body })
+
+        // VALIDACIÓN  
+        /* if (!ctx.body.includes('@')) {
             return fallBack(`Debes ingresar un mail correcto`)
-        }
+        } */
 
-        const dateObject = {
-            name: state.get('name'),
-            email: ctx.body,
-            startDate: utcToZonedTime(state.get('desiredDate'), TIME_ZONE),
-            endData: utcToZonedTime(addMinutes(state.get('desiredDate'), +DURATION_MEET), TIME_ZONE),
-            phone: ctx.from
-        }
+        //MANDAR AQUÍ SOLICITUD PHP O SQL -------------------------------------------------------------------
 
-        await appToCalendar(dateObject)
+        await prisma.requests.create({
+            data: {
+                tarea: state.get("tarea"),
+                notas: state.get("name"),
+                hab: parseInt(state.get("hab"))
+            }
+        })
 
+        // ---------------------------------------------------------------------------------------------------------
+
+        // Sigue...
         clearHistory(state)
-        await flowDynamic('Listo! agendado Buen dia')
+        await flowDynamic('El personal ya ha recibido el aviso y están trabajando en ello')
+        await flowDynamic('Para cualquier otra incidencia cuente conmigo')
+        await flowDynamic('Le deseo un feliz día')
+        return endFlow();
     })
 
 export { flowConfirm }
