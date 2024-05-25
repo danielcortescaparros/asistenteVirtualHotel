@@ -32,8 +32,8 @@ No proporcionas información dinámica (Dependientes del cliente, reserva, etc.)
 •   ¡¡IMPORTANTE!! Ten en cuenta el ### HISTORIAL DE CONVERSACIÓN para dar tu respuesta
 •   No saludes ni des las gracias
 •   Respuestas súper claras y directas. Evitar el uso de jerga o redundancia. Respuestas cortas.
-•   NO escribas ningún comentario sobre cómo solventar el problema. Únicamente notifícalo. 
 •   Prohibido añadir cualquier comentario u opinión ajeno a la descripción del problema.
+•   Responder en infinitivo o impersonal: Traer almohada extra, Se ha roto la lámpara, etc.
 
 
 !! INSTRUCCIONES PARA DAR TU RESPUESTA:
@@ -88,7 +88,7 @@ const ctaFlow = addKeyword(EVENTS.ACTION)
             const message = `Voy a comunicar el siguiente aviso a recepción: ${state.get('tarea')}`;
             await flowDynamic([{ body: message, delay: generateTimer(150, 250) }]);
             await flowDynamic([{ body: `Para confirmar responda "sí", de lo contrario "cancelar"`, delay: generateTimer(150, 250) }]);
-            const actMessage = message.concat(` Para confirmar responda "sí", de lo contrario "cancelar"`);
+            const actMessage = message.concat(`Para confirmar responda "sí", de lo contrario "cancelar"`);
             await handleHistory({ content: actMessage, role: 'assistant' }, state);
 
         } catch (err) {
@@ -97,7 +97,7 @@ const ctaFlow = addKeyword(EVENTS.ACTION)
         }
     })
 
-    .addAction({ capture: true }, async ({ body }, { gotoFlow, flowDynamic, state }) => {
+    .addAction({ capture: true }, async ({ body }, { gotoFlow, flowDynamic, endFlow, fallBack, state }) => {
 
         if (/s[ií]/i.test(body.toLowerCase())) {
             //await handleHistory({ content: body, role: 'customer' }, state);
@@ -107,10 +107,10 @@ const ctaFlow = addKeyword(EVENTS.ACTION)
             await flowDynamic([{ body: "Aviso cancelado", delay: generateTimer(150, 250) }]);
             await flowDynamic([{ body: "¿Necesita cualquier otra cosa?", delay: generateTimer(150, 250) }]);
             await handleHistory({ content: "Aviso cancelado. ¿Necesita cualquier otra cosa?", role: 'assistant' }, state);
-            return
+            return endFlow();
         }
         // "else"
-        // ...
+        return fallBack(`Por favor, para confirmar el aviso al personal responda "sí", de lo contrario "cancelar"`);
     })
 
     .addAnswer(`🔥`)

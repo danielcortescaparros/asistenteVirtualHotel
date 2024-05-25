@@ -12,7 +12,7 @@ const DURATION_MEET = process.env.DURATION_MEET ?? 45
 const TIME_ZONE = process.env.TZ
 
 // Flow
-const flowConfirm = addKeyword('test').addAction(async (_, { flowDynamic }) => {
+const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic }) => {
     await flowDynamic('Perfecto, ya casi está, para enviar la solicitud responda a lo siguiente por favor.')
     await flowDynamic('¿Cuál es su número de habitación?')
 }).addAction({ capture: true }, async (ctx, { state, flowDynamic, endFlow, fallBack }) => {

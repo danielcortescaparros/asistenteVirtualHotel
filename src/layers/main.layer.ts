@@ -9,8 +9,8 @@ const PROMPT_DISCRIMINATOR = `
 ### Historial de Conversación (Vendedor/Cliente) ###
 {HISTORY}
 
-**INFORMACION**: Selecciona esta acción si el cliente parece necesitar más información sobre el hotel, sus servicios o informarse del horario de atención.
-**CTA**: Selecciona esta acción si el cliente YA ESTÁ INTERESADO en un servicio, si quiere dar un aviso O si le ha ocurrido cualquier cosa que requiera la acción de un humano. Ejemplos: Necesita una toalla (Una persona tiene que llevársela), se le rompe un jarrón (Tiene que ir el servicio de limpieza). Piensa en posibles soluciones a los problemas que te plantee el cliente, si la acción de un humano puede resolverlo, selecciona esta opción.
+**INFORMACION**: Selecciona esta acción si el cliente parece necesitar más INFORMACIÓN sobre el hotel, sus servicios o informarse del horario de atención.
+**CTA**: Selecciona esta acción si el cliente quiere dar un aviso, si le ha ocurrido cualquier cosa que requiera la acción de un humano como: Necesita una toalla, almohada extra, suministros para la habitación (Una persona tiene que llevársela), se le rompe un jarrón (Tiene que ir el servicio de limpieza). Piensa en posibles soluciones a los problemas que te plantee el cliente, si la solución de un humano puede resolverlo, selecciona esta opción. O si el cliente QUIERE CONTRATAR un servicio.
 
 ### Instrucciones ###
 
