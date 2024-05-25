@@ -41,7 +41,7 @@ export const generatePromptSeller = (history: string, database: string) => {
         .replace('{DATABASE}', database)
 };
 
-const flowSeller = addKeyword(EVENTS.ACTION)
+const infoFlow = addKeyword(EVENTS.ACTION)
     .addAnswer(`⏱️`)
     .addAction(async (_, { state, flowDynamic, extensions }) => {
         try {
@@ -74,4 +74,4 @@ const flowSeller = addKeyword(EVENTS.ACTION)
         }
     })
 
-export { flowSeller }
+export { infoFlow }
