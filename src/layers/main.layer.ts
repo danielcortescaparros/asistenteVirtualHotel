@@ -2,19 +2,20 @@ import { BotContext, BotMethods } from "@builderbot/bot/dist/types"
 import { getHistoryParse } from "../utils/handleHistory"
 import AIClass from "../services/ai"
 import { infoFlow } from "../flows/info.flow"
+import { ctaFlow } from "src/flows/cta.flow"
 import { flowSchedule } from "../flows/schedule.flow"
 
-const PROMPT_DISCRIMINATOR = `### Historial de Conversación (Vendedor/Cliente) ###
+const PROMPT_DISCRIMINATOR = `
+### Historial de Conversación (Vendedor/Cliente) ###
 {HISTORY}
 
-### Intenciones del Usuario ###
-
-**HABLAR**: Selecciona esta acción si el cliente parece necesitar más información sobre el negocio, servicio o informarse del horario de atencion.
-**PROGRAMAR**: Selecciona esta acción unicamente cuando el cliente determine la hora y fecha para programar una cita.
+**INFORMACION**: Selecciona esta acción si el cliente parece necesitar más información sobre el hotel, sus servicios o informarse del horario de atención.
+**CTA**: Selecciona esta acción si el cliente YA ESTÁ INTERESADO en un servicio, si quiere dar un aviso O si le ha ocurrido cualquier cosa que requiera la acción de un humano. Ejemplos: Necesita una toalla (Una persona tiene que llevársela), se le rompe un jarrón (Tiene que ir el servicio de limpieza). Piensa en posibles soluciones a los problemas que te plantee el cliente, si la acción de un humano puede resolverlo, selecciona esta opción.
 
 ### Instrucciones ###
 
-Por favor, analiza la siguiente conversación y determina la intención del usuario.`
+Por favor, analiza ### Historial de Conversación y determina la intención del cliente.
+`
 
 export default async (_: BotContext, { state, gotoFlow, extensions }: BotMethods) => {
     const ai = extensions.ai as AIClass
@@ -34,6 +35,6 @@ export default async (_: BotContext, { state, gotoFlow, extensions }: BotMethods
 
     console.log({ prediction })
 
-    if (prediction.includes('HABLAR')) return gotoFlow(infoFlow)
-    if (prediction.includes('PROGRAMAR')) return gotoFlow(flowSchedule)
+    if (prediction.includes('INFORMACION')) return gotoFlow(infoFlow)
+    if (prediction.includes('CTA')) return gotoFlow(ctaFlow)
 }

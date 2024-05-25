@@ -100,8 +100,8 @@ class AIClass {
                                     items: {
                                         type: "string",
                                         enum: [
-                                            "PROGRAMAR",
-                                            "HABLAR",
+                                            "INFORMACION",
+                                            "CTA",
                                         ]
                                     },
                                 },
